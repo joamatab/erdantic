@@ -92,14 +92,16 @@ class PydanticModel(Model[Type[pydantic.BaseModel]]):
                         not isinstance(default, pydantic.fields.UndefinedType)
                         and default is not ...
                     ):
-                        if not line.strip().endswith("."):
-                            line = line.rstrip() + ". "
-                        else:
-                            line = line.rstrip() + " "
+                        line = (
+                            f"{line.rstrip()} "
+                            if line.strip().endswith(".")
+                            else f"{line.rstrip()}. "
+                        )
+
                         if isinstance(default, str):
                             line += f"Default is '{default}'."
                         else:
                             line += f"Default is {default}."
-                    out += "    " + line.strip() + "\n"
+                    out += f"    {line.strip()}" + "\n"
 
         return out

@@ -141,8 +141,7 @@ class Model(ABC, Generic[MT]):
     def docstring(self) -> str:
         """Docstring for this data model."""
         out = f"{self.model.__module__}.{self.model.__qualname__}"
-        docstring = inspect.getdoc(self.model)
-        if docstring:
+        if docstring := inspect.getdoc(self.model):
             out += "\n\n" + docstring + "\n"
         return out
 
@@ -170,9 +169,7 @@ class Model(ABC, Generic[MT]):
         return hash(self.key)
 
     def __lt__(self, other) -> bool:
-        if isinstance(other, Model):
-            return self.key < other.key
-        return NotImplemented
+        return self.key < other.key if isinstance(other, Model) else NotImplemented
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.name})"

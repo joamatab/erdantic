@@ -66,7 +66,7 @@ class UnevaluatedForwardRefError(ErdanticException):
             f"for field {field.name} on model {model.name}."
         )
         if model.forward_ref_help:
-            message += " " + model.forward_ref_help
+            message += f" {model.forward_ref_help}"
         super().__init__(message)
 
 

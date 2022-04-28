@@ -61,8 +61,7 @@ def get_recursive_args(tp: Union[type, GenericAlias]) -> List[type]:
             else:
                 raise _UnevaluatedForwardRefError(forward_ref=t)
 
-        args = get_args(t)
-        if args:
+        if args := get_args(t):
             for arg in args:
                 yield from recurse(arg)
         else:
@@ -79,8 +78,7 @@ def repr_type(tp: Union[type, GenericAlias]) -> str:
     - Union[..., None] -> Optional[...]
     - Enums show base classes, e.g., `MyEnum(str, Enum)`
     """
-    origin = get_origin(tp)
-    if origin:
+    if origin := get_origin(tp):
         origin_name = getattr(origin, "__name__", str(origin))
         args = get_args(tp)
         # Union[..., None] -> Optional[...]

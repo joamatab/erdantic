@@ -226,25 +226,26 @@ def search_composition_graph(
         seen_models (Set[Model]): Set instance that visited nodes will be added to.
         seen_edges (Set[Edge]): Set instance that traversed edges will be added to.
     """
-    if model not in seen_models:
-        seen_models.add(model)
-        for field in model.fields:
-            try:
-                for arg in get_recursive_args(field.type_obj):
-                    try:
-                        field_model = adapt_model(arg)
-                        seen_edges.add(Edge(source=model, source_field=field, target=field_model))
-                        search_composition_graph(field_model, seen_models, seen_edges)
-                    except UnknownModelTypeError:
-                        pass
-            except _UnevaluatedForwardRefError as e:
-                raise UnevaluatedForwardRefError(
-                    model=model, field=field, forward_ref=e.forward_ref
-                ) from None
-            except _StringForwardRefError as e:
-                raise StringForwardRefError(
-                    model=model, field=field, forward_ref=e.forward_ref
-                ) from None
+    if model in seen_models:
+        return
+    seen_models.add(model)
+    for field in model.fields:
+        try:
+            for arg in get_recursive_args(field.type_obj):
+                try:
+                    field_model = adapt_model(arg)
+                    seen_edges.add(Edge(source=model, source_field=field, target=field_model))
+                    search_composition_graph(field_model, seen_models, seen_edges)
+                except UnknownModelTypeError:
+                    pass
+        except _UnevaluatedForwardRefError as e:
+            raise UnevaluatedForwardRefError(
+                model=model, field=field, forward_ref=e.forward_ref
+            ) from None
+        except _StringForwardRefError as e:
+            raise StringForwardRefError(
+                model=model, field=field, forward_ref=e.forward_ref
+            ) from None
 
 
 def draw(*models: type, out: Union[str, os.PathLike], termini: Sequence[type] = [], **kwargs):
